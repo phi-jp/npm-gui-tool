@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jade/1.11.0/jade.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/riot/3.1.0/riot+compiler.js'></script>
+    <script src="https://cdn.jsdelivr.net/riot-route/3.1.0/route.min.js"></script>
+  </head>
+  <body>
+    <div data-is='app'></div>
+  </body>
+
+  <script>
+  </script>
+</html>
+
+<script type="riot/tag" template='jade'>
+app
+  div.container
+    div.packages
+      h2 packages
+      div.package(each='{value, key in packages}', onclick='{selectPackage}') {key}
+    div.detail
+      h2 detail
+      div {currentPackage.name}
+      div {currentPackage.description}
+
+      div
+        div(each='{value, key in currentPackage.scripts}', onclick='{exec}') {key}
+
+  script.
+    var self = this;
+    var spawn = require('child_process').spawn;
+    var exec = require('child_process').exec;
+
+    this.currentPackage = null;
+
+    riot.util.tmpl.errorHandler = function() {
+
+    };
+
+    this.on('mount', function() {
+      this.loadPackages();
+
+    });
+
+    this.loadPackages = function() {
+      this.packages = localStorage.getItem('packages');
+      this.packages = this.packages ? JSON.parse(this.packages) : {};
+      this.currentPackage = this.packages[ Object.keys(this.packages)[0] ];
+      console.log(this.currentPackage);
+      this.update();
+    };
+
+    this.addPackage = function(pkg) {
+      this.packages[pkg.name] = pkg;
+      localStorage.setItem('packages', JSON.stringify(this.packages));
+      this.currentPackage = pkg;
+      this.update();
+    };
+
+    this.selectPackage = function(e) {
+      self.currentPackage = this.packages[e.item.key];
+      self.update();
+    };
+
+    this.exec = function(e) {
+      var command = spawn(e.item.value);
+      // var command = spawn('pwd');
+      command.stdout.on('data', function(data) {
+        console.log(data.toString());
+      });
+      command.stderr.on('data', function(data) {
+        console.log(data.toString());
+      });
+
+      // exec(e.item.value, function(error, stdout) {
+      //   if (error) { console.log(error); }
+      //   console.log(stdout);
+      // });
+    };
+
+    document.ondragover = document.ondragleave = document.ondragend = function() {
+      return false;
+    };
+    document.ondrop = function(e) {
+      e.preventDefault();
+
+      var file = e.dataTransfer.files[0];
+      var pkg = require(file.path);
+
+      self.addPackage(pkg);
+
+      return false;
+    };
+</script>
+
+<script>
+
+riot.mount('app');    
+
+</script>
