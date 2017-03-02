@@ -1,0 +1,23 @@
+{
+  "name": "npm-gui-tool",
+  "version": "1.0.0",
+  "description": "npm-gui-tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phi-jp/npm-gui-tool.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phi-jp/npm-gui-tool/issues"
+  },
+  "homepage": "https://github.com/phi-jp/npm-gui-tool#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^1.4.13"
+  }
+}
